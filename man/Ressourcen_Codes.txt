@@ -1,0 +1,482 @@
+
+### Copyright disclaimer ###########################################################################################
+
+Direkt am Anfang einfügen, unter: <script>(function() {
+
+  // Copyright (C) 2021 OGM/Clara Himmelbauer - All Rights Reserved
+  // You may use, distribute and modify this code only with permission of OGM or Clara Himmelbauer.
+  // contact: himmelbauer@ogm.at  
+
+
+### Logo einfügen #################################################################################################
+
+In Legende/Begleittext mit Link in neuem Tab:  <a href = 'https://www.ogm.at/' target= '_blank'>www.ogm.at</a>
+
+  addLegend("topright", pal = colorNumeric("YlOrRd", Bez_stmk$Insgesamt), values = ~Insgesamt, 
+            title = HTML("Lebenserwartung in der Steiermark <br>
+                         <small>Quelle: <a href = 'https://www.ogm.at/' target= '_blank'>www.ogm.at</a>"),
+            labFormat = labelFormat(suffix = " Jahre"),
+            group = "Gesamt")
+
+als Logo: package leafem erforderlich
+
+   leafem::addLogo(img = https://www.ogm.at/wp-content/uploads/2020/09/ogm_researchandcomm.jpg,
+                   src = "remote", url = https://www.ogm.at/,
+                   position = "bottomright", width = 160, height = 27.5, offset.x = 0, offset.y = 15)
+
+### Popups ########################################################################################################
+
+Der Code ist noch nicht fertig:
+popup <- paste0("<b>", lup$Name, ": </b> <br>",
+                "Bevölkerung 01.01.2021: ", format(lup$Bev_2021, big.mark = "."), " Personen (Oberösterreich: ", lupBL$Bev_2021, ")<br>", 
+                "Bevölkerungsentwicklung seit 2011: ", round((lup$Bev_2021 / lup$Bev_2011 - 1)*100), "% (", round((lupBL$Bev_2021 / lupBL$Bev_2011 - 1)*100),")<br>",
+                "Personen über 64: ", round(lup$Bev_2021_65. / lup$Bev_2021 * 100), "% <br>",
+                "Personen unter 15: ", round(lup$Bev_2021_14. / lup$Bev_2021 * 100), "% <br> <br>",
+                
+                "Personen ohne österreichische Staatsbürgerschaft: ", round((lup$Bev_2021_Drittstaaten + lup$Bev_2021_EU.EFTA)/lup$Bev_2021*100), "% <br>",
+                "Häufigstes Herkunftsland der Zuwanderer: ", lup$Herkunftsland_2021, "<br>",
+                "Volksschüler mit nichtdeutscher Umgangssprache: ", round(lup$Anteil.Schüler.mit.nicht.deutscher.Muttersprache * 100), "% <br>",
+                "Bevölkerung über 15 mit Matura: ", round(lup$matura_bev_ue15 * 100), "% <br>",
+                "Jährliche Geburten pro 1.000 Einwohner: ", round(lup$Geburten_pro_1000_2016.2021), "<br>",
+                "Jährliche Todesfälle pro 1.000 Einwohner: ", round(lup$Todesfälle_pro_1000_2016.2021), "<br><br>",
+                
+                "Preis für 1m² Baugrund: ", round(lup$Baugrund_2015.2020), " € <br>",
+                "Durchschnittliches Jahreseinkommen <small>(ganzjährig Beschäftigte)</small>: ", format(lup$BruttoEK, big.mark = "."), "€ <br>",
+                "Jährliche Übernachtungen pro Einwohner: ", lup$Übernachtungen_pro_EW, "<br>",
+                "Veränderung Arbeitslosigkeit Juni 2019-2021: ", round((lup$alo_2021_06 / lup$alo_2019_06 - 1)*100), "% <br>",
+                "Arbeitslose Juni 2021: ", lup$alo_2021_06, " Personen <br>",
+                "Gemeindefinanzen Überschuss 2019: ", round(lup$Defizit.Überschuss*100), "%")
+
+Popup als Tabelle: 
+popup <- paste0("<style> div.leaflet-popup-content {width:500px !important;}</style>", 
+                "<table>",
+                  "<tr>",
+                    "<th>", "", "</th>",
+                    "<th>", lup$Name, "</th>",
+                    "<th>", lupBL$Name, "</th>",
+                  "</tr>",
+                  "<tr>",
+                    "<th>", "Bevölkerung 01.01.2021", "</th>",
+                    "<th>", format(lup$Bev_2021, big.mark = "."), "</th>",
+                    "<th>", format(lupBL$Bev_2021, big.mark = "."), "</th>",
+                  "</tr>",
+                  "<tr>",
+                    "<th>", "Bevölkerungsentwicklung seit 2011", "</th>",
+                    "<th>", round(lup$d_bev), "% </th>",
+                    "<th>", round(lupBL$d_bev), "% </th>",
+                  "</tr>",
+                  "<tr>",
+                    "<th>", "Personen über 64", "</th>",
+                    "<th>", round(lup$Bev_65.), "% </th>",
+                    "<th>", round(lupBL$Bev_65.), "% </th>",
+                  "</tr>",
+                  "<tr>",
+                    "<th>", "Personen unter 15", "</th>",
+                    "<th>", round(lup$Bev_14.), "% </th>",
+                    "<th>", round(lupBL$Bev_14.), "% </th>",
+                  "</tr>",
+                  "<tr>",
+                    "<th>", "Personen ohne österreichische Staatsbürgerschaft", "</th>",
+                    "<th>", round(lup$Ausl), "% </th>",
+                    "<th>", round(lupBL$Ausl), "% </th>",
+                  "</tr>",
+                  "<tr>",
+                    "<th>", "Häufigstes Herkunftsland der Zuwanderer", "</th>",
+                    "<th>", lup$Herkunftsland, ", ", round(lup$Herkunftsland_ant), "% </th>",
+                    "<th>", lupBL$Herkunftsland, ", ", round(lupBL$Herkunftsland_ant), "% </th>",
+                  "</tr>",
+                  "<tr>",
+                    "<th>", "Zweithäufigstes Herkunftsland der Zuwanderer", "</th>",
+                    "<th>", lup$Herkunftsland2, ", ", round(lup$Herkunftsland_ant_2), "% </th>",
+                    "<th>", lupBL$Herkunftsland2, ", ", round(lupBL$Herkunftsland_ant_2), "% </th>",
+                  "</tr>",
+                  "<tr>",
+                    "<th>", "Volksschüler mit nichtdeutscher Umgangssprache", "</th>",
+                    "<th>", round(lup$vs_nichtdeutsch), "% </th>",
+                    "<th>", round(lupBL$vs_nichtdeutsch), "% </th>",
+                  "</tr>",
+                  "<tr>",
+                    "<th>", "Bevölkerung über 15 mit Matura", "</th>",
+                    "<th>", round(lup$matura), "% </th>",
+                    "<th>", round(lupBL$matura), "% </th>",
+                  "</tr>",
+                  "<tr>",
+                    "<th>", "Jährliche Geburten pro 1.000 Einwohner", "</th>",
+                    "<th>", round(lup$Geburten_pro_1000_2016.2021), "</th>",
+                    "<th>", round(lupBL$Geburten_pro_1000_2016.2021), "</th>",
+                  "</tr>",
+                  "<tr>",
+                    "<th>", "Jährliche Todesfälle pro 1.000 Einwohner", "</th>",
+                    "<th>", round(lup$Todesfälle_pro_1000_2016.2021), "</th>",
+                    "<th>", round(lupBL$Todesfälle_pro_1000_2016.2021), "</th>",
+                  "</tr>",
+                  "<tr>",
+                    "<th>", "Preis für 1m² Baugrund", "</th>",
+                    "<th>", round(lup$Baugrund_2015.2020), "€ </th>",
+                    "<th>", round(lupBL$Baugrund_2015.2020), "€ </th>",
+                  "</tr>",
+                  "<tr>",
+                    "<th>", "Durchschnittliches Jahreseinkommen <small>(ganzjährig Beschäftigte)</small>", "</th>",
+                    "<th>", format(lup$BruttoEK, big.mark = "."), "€ </th>",
+                    "<th>", format(lupBL$BruttoEK, big.mark = "."), "€ </th>",
+                  "</tr>",
+                  "<tr>",
+                    "<th>", "Veränderung Arbeitslosigkeit Juni 2019-2021", "</th>",
+                    "<th>", round(lup$d_alo), "% </th>",
+                    "<th>", round(lupBL$d_alo), "% </th>",
+                  "</tr>",
+                  "<tr>",
+                    "<th>", "Arbeitslose Juni 2021", "</th>",
+                    "<th>", lup$alo_2021_06, " Personen </th>",
+                    "<th>", format(round(lupBL$alo_2021_06), big.mark = "."), " Personen </th>",
+                  "</tr>",
+                  "<tr>",
+                    "<th>", "Gemeindefinanzen Überschuss 2019", "</th>",
+                    "<th>", round(lup$Gemeindefinanzen), "% </th>",
+                    "<th>", round(lupBL$Gemeindefinanzen), "% </th>",
+                  "</tr>",
+                
+                "</table>")
+
+Die Einträge in den Tabellen nicht mehr dick machen: im CSS-file irgendwo die th anders definieren (das heißt den Code hier reinkopieren, am besten vor .info oder sowas):
+th{font-weight: normal;}
+Im popup in R kann man dann im Code ein "<b>" vor die Tabellenkästchen, die man fett haben will, geben
+
+addPolygons(data = lup,
+            color = "white", opacity = 1, weight = 2, fillOpacity = 0,
+            label = lapply(labellup, htmltools::HTML), popup = popup) %>%
+
+
+### CSS: Zeilenabstand ändern ####################################################################################
+
+p { margin:6px }
+
+.legend {
+line-height: 14px;
+color: #555;
+}
+
+Abstand zwischen den Paragraphen (zum Beispiel in einem Infotext) ändern: p { margin:6px }
+Das p { margin:6px } einfach vor .info oder sowas einfügen
+
+
+### CSS: Sachen nicht eckig und undurchsichtig machen ############################################################
+
+Normale Infoboxen:
+ -) die letzten zwei Zeilen (border radius und Schattierung löschen)
+ -) alpha beim background auf 1 stellen
+ -) font auf 12px ändern
+ 
+.info {
+padding: 6px 8px;
+font: 12px/16px Arial, Helvetica, sans-serif;
+background: white;
+background: rgba(255,255,255,1);
+}
+
+Bei Layers control die Ecken nicht abrunden: nach border-radius oder .leaflet-control layers suchen und dann den border-radius auf 0px ändern.
+.leaflet-control-layers {box-shadow: 0 1px 5px rgba(0,0,0,0.4);background: #fff;border-radius: 0px;}
+
+
+### Legenden ######################################################################################################
+
+
+diskret:
+addLegend(colors = c(col0, col1, col2, col3, col4, col5, col6),
+            labels = c("stark gesunken", "gesunken", "leicht gesunken","leicht gestiegen", 
+                       "gestiegen", "stark gestiegen", "sehr stark gestiegen"),
+            title = HTML("Veränderung der Arbeitslosigkeit <br> in den Gemeinden Tirols <br> <small> 2019 - 2021<br>
+                         <small>Quelle: <a href = 'https://www.ogm.at/' target= '_blank'>www.ogm.at</a>"),
+            position = "topleft",
+            opacity = 1)
+
+stetig:
+addLegend("topright", pal = colorNumeric("YlOrRd", Bez_stmk$Insgesamt), values = ~Insgesamt, 
+            title = HTML("Lebenserwartung in der Steiermark <br>
+                         <small>Quelle: <a href = 'https://www.ogm.at/' target= '_blank'>www.ogm.at</a>"),
+            labFormat = labelFormat(suffix = " Jahre"),,
+            group = "Gesamt")
+
+Legenden können einer Gruppe zugeordnet werden, wenn es overlayGroups sind.
+Wenn die gruppe eine base Group ist, dann ist die Legende immer da und kann nicht ausgeblendet werden, wenn die Gruppe gewechselt wird.
+
+
+### Labels im HTML Style #########################################################################################
+
+label0 <- lapply(seq(nrow(data0)), function(i){
+  paste0("<b>", data0$Name[i], ": </b> </br>",
+         "Veränderung Arbeitslosigkeit: ", round(data0$d_alo_g[i], 0), "% <br>")
+})
+
+addPolygons(data = data0,
+              color = "black", weight = 1, fillColor = col0, fillOpacity = 0.7,
+              label = lapply(label0, htmltools::HTML),
+              group = "Gesamt")
+
+
+### Lables als tables ############################################################################################
+
+library(kableExtra) 
+library(data.table)
+
+# Welche columns sollen dargestellt werden	
+  items <- c('pop16plus', 'Erwerbstätigenquote',
+             'Arbeitslosenquote', 'Anteil Arbeiterinnen',
+             'Anteil Angestellte und Beamtinnen', 'Anteil Selbständige',
+             'Teilzeitquote (Unselbständige)')
+  
+# Wie sollen die columns im table heissen
+  names(items) <- c('Einwohnerinnen (über 16 Jahre)',
+                 'Erwerbstätigenquote', 'Arbeitslosenquote', 'Anteil Arbeiterinnen', 'Anteil Angestellte und Beamtinnen',
+                 'Anteil Selbständige', 'Teilzeitquote (der Unselbständigen)')
+ 
+  label_tab <- st_drop_geometry(grz_shape) # geometry entfernen (Annahme sf-object)
+  label_tab <- label_tab[items]
+  
+  # transpose
+  label_tab <- data.table::transpose(label_tab)
+  
+  # name tables
+  colnames(label_tab) <- grz_shape$grz_name
+  label_tab <- cbind(names(items), label_tab)
+  
+  for(i in 2:ncol(label_tab)) {
+ 
+    header <- c(' '=2)
+    names(header) <- colnames(label_tab)[i]
+  
+  grz_shape$labels[i-1] <- label_tab[c(1,i)] %>%
+    kable(col.names = NULL, align=c('l','c')) %>%
+
+    add_header_above(header=header) %>%
+  kable_styling(bootstrap_options = c("striped"), font_size = 13)
+  }
+
+einfügen:
+addPolygons(..., fill=T, fillOpacity = 0, label = lapply(grz_shape$labels, htmltools::HTML))
+
+
+### Title Tags ###################################################################################################
+
+tag.map.title <- tags$style(HTML("
+  .leaflet-control.map-title { 
+    position: fixed !important;
+    left: 50px;
+    text-align: left;
+    padding-left: 10px; 
+    padding-right: 10px; 
+    background: rgba(255,255,255,1);
+    font-weight: bold;
+    font-size: 20px;
+  }
+"))
+title <- tags$div(
+  tag.map.title, HTML("Arbeitslosigkeit im Zweijahresvergleich <br>
+                      <small>Juni 2019 zu Juni 2021"))
+
+ addControl(title, position = "topleft", className = "map-title")
+
+
+### Gemeindenamen ################################################################################################
+
+data$Name <- gsub("ÃŸ", "ß", data$Name)
+data$Name <- gsub("Ã¤", "ä", data$Name)
+data$Name <- gsub("Ã¶", "ö", data$Name)
+data$Name <- gsub("Ã¼", "ü", data$Name)
+data$Name <- gsub("Ãf?", "Ü", data$Name)
+data$Name[data$Name == "Üƒ?belbach"] <- "Übelbach"
+data$Name[data$Name == "Üƒ?berackern"] <- "Überackern"
+data$Name[data$Name == "Üƒ?bersaxen"] <- "Übersaxen"
+data$Name[data$Name == "Üƒ?blarn"] <- "Öblarn"
+
+
+
+### Polygone vereinfachen #######################################################################################
+
+GEM_simple <- gSimplify(GEM, tol = 0.0001, topologyPreserve = TRUE)
+id <- sapply(slot(GEM_simple, "polygons"), function(x) slot(x, "ID"))
+df <- data.frame( ID=1:length(GEM_simple), row.names = id)
+GEM_simple <- SpatialPolygonsDataFrame(GEM_simple, df)
+GEM_simple@data <- cbind(GEM_simple@data, GEM@data)
+GEM_simple <- ms_simplify(GEM_simple)
+Gem_lines <- as(GEM_simple, "SpatialLinesDataFrame")
+
+
+### Polygone aggregieren ########################################################################################
+
+ID <- cut(GEM$BL, c(0, unique(GEM$BL)), include.lowest = T)
+BL <- aggregate(GEM["BL"], by = list(ID = ID), FUN = mean, dissolve = TRUE, areaWeighted = FALSE)
+
+### Koordinatensysteme ändern ###################################################################################
+
+GEM_simple <- spTransform(GEM_simple, CRS("+proj=longlat +datum=WGS84"))
+
+### Polygone auf den gleichen Mittelpunkt bringen (wenn die Grenzen leicht verschoben sind) #####################
+
+coordinates(gCentroid(GEM_simple))
+# 14.14214 47.58757
+# actual center: 14.14128 47.58707 --> mit einem anderen gCentroid Befehl rausfinden oder so
+GEM_simple <- shift(GEM_simple, dx = -0.00086, dy = -0.0005)
+
+### Polygone übereinander legen #################################################################################
+
+Beispiel: eine Matrix erstellen, wo ein 1 ist if ein Gemeindebau in einem Sprengel ist und 0 if der Gemeindebau sich nicht in dem Sprengel befindet
+Outputmatrix: Reihen = Sprengel; Spalten = Gemeindebauten
+for(i in Gemeindebauten$OBJECTID) {
+  a <- subset(Gemeindebauten, Gemeindebauten$OBJECTID == i)
+  b <- Sprengel19[a,]
+  for (j in 1:nrow(b)) {
+    Output[rownames(Output) == b$SPRENGEL[j], colnames(Output) == i] <- 1
+  }
+}
+
+Beispiel: Für jeden Sprengel bei der Nationalratswahl 2019
+ -) Mittelpunkt des Sprengels bei der Nationalratswahl 2019 rausfinden
+ -) In welchem Sprengel der Bundespräsidentenwahl 2016 befand sich dieser Sprengel
+ -) Vom Sprengel der BP 2016 die Wahlergebnisse extrahieren und auf den entsprechenden Sprengel der NRW 2019 übertragen
+for(i in c(as.vector(Sprengel19$SPRENGEL))) {
+  c <- over(gCentroid(Sprengel19[Sprengel19$SPRENGEL == i,]), SprengelBP16.1)
+  Output.BP16[rownames(Output.BP16) == i, 1] <- i
+  Output.BP16[rownames(Output.BP16) == i, 2] <- (c$Wahlbeteiligung)
+  Output.BP16[rownames(Output.BP16) == i, 3] <- (c$Hofer)
+  Output.BP16[rownames(Output.BP16) == i, 4] <- (c$VdB)
+}
+head(Output.BP16)
+
+Beispiel: Für jede Gemeinde die beste Haltestellenkategorie finden
+Gem$HSKat <- 0
+for(i in Gem$GKZ){
+  a <- subset(Gem, GKZ == i)
+  b <- HS[a, ]
+  Gem$HSKat[Gem$GKZ == i] <- min(b$num)
+}
+
+
+### Polygone übereinander legen #################################################################################
+
+Reihenfolge der plots ändern (z.b. relevant wenn fills über Grenzen (lines) geplottet werden)
+
+Bei addpolygons die option hinzufügen:
+  addPolygons(..., options = pathOptions(pane = "borders")) %>%
+  addPolygons(..., options = pathOptions(pane = "areas")) %>%
+
+Und:
+  addMapPane("areas", zIndex = 410) %>%
+  addMapPane("borders", zIndex = 420) %>%
+
+zIndex sollte zwischen 400 und 500 sein, höhere Zahlen werden als letztes geplottet
+
+  
+### Zoom-buttons verschieben ####################################################################################
+
+Zuerst zoom deaktivieren:
+	leaflet(options = leafletOptions(zoomControl = F))
+
+Dann neu einfügen:
+ 	 htmlwidgets::onRender("function(el, x) {
+       		 L.control.zoom({ position: 'bottomright' }).addTo(this)
+    	 }") %>%
+
+
+### Plot speichern ###############################################################################################
+
+library(htmlwidgets)
+library(plotly)
+
+  plot1 <- leaflet(...)
+  htmlwidgets::saveWidget(plotly::as_widget(plot1), "outfile.html")
+ 
+
+### html-files anpassen ##########################################################################################
+
+library(xml2)
+Legenden-opacity und copyright
+
+source('X:/Geodaten/zzz_change_css/change_css_codes_xml2.R')
+change_legend_css("infile.html", "outfile.html")
+
+
+### Labels weiter von der betrachteten Stelle entfernen ##########################################################
+
+Annahme: sf-file
+
+center <- st_centroid(wien_shape) # sollte ein shape des gesamten Gebiets sein
+
+# Dann teilen wir wir die labels in zwei Hälften
+grz_shape_right <- st_crop(grz_shape, xmin = center$geometry[[1]][1], 
+                          ymin=min(unlist(wien_shape$geometry)),
+                                   ymax=max(unlist(wien_shape$geometry)),
+                                            xmax=max(unlist(wien_shape$geometry)))
+
+grz_shape_left <- st_crop(grz_shape, xmin = min(unlist(wien_shape$geometry)), 
+                          ymin=min(unlist(wien_shape$geometry)),
+                          ymax=max(unlist(wien_shape$geometry)),
+                          xmax=center$geometry[[1]][1])
+
+offset <- 20 # Wie weit entfernt
+
+# und plotten beide separat
+
+addPolygons(data=grz_shape_left$geometry, color = 'black', weight = 0, fill=T, fillOpacity = 0,
+            label = lapply(grz_shape_left$labels, htmltools::HTML), labelOptions = labelOptions(offset = c(offset,0), direction = 'right'),
+            options = pathOptions(pane = "borders")) %>%
+
+addPolygons(data=grz_shape_right$geometry, color = 'black', weight = 0, fill=T, fillOpacity = 0,
+            label = lapply(grz_shape_right$labels, htmltools::HTML), labelOptions = labelOptions(offset = c(-offset,0), direction = 'left'),
+            options = pathOptions(pane = "borders"))  %>%
+
+### Titel für Overlay/radiobuttons ##############################################################################
+
+# Basegroups
+    htmlwidgets::onRender("
+        function() {
+            $('.leaflet-control-layers-list').prepend('<label style=\"text-align:center\">My Epic Title</label>');
+        }
+    ") %>%
+
+# overlays
+    htmlwidgets::onRender("
+        function() {
+            $('.leaflet-control-layers-overlays').prepend('<label style=\"text-align:center\">My Epic Title</label>');
+        }
+    ") %>%
+
+
+### GGPLOT template #############################################################################################
+
+	# es braucht hier grz_shape - ein file mit grätzeldaten
+	# und bez_shape ein file mit den bezirksgrenzen
+
+    # hier sollten farben als hexcode drin sein (oder anpassen)
+    grz_shape$ggplot_data <- as.character(grz_shape[[paste0(layers[group_nr], '_kat')]])
+    
+    grz_shape$ggplot_data[grz_shape$ggplot_data == '#FF5A64'] <- "Überdurchschnittlich"
+    grz_shape$ggplot_data[grz_shape$ggplot_data == '#FFCED1'] <- "Eher überdurchschnittlich"
+    grz_shape$ggplot_data[grz_shape$ggplot_data == '#E6E5FE'] <- "Eher unterdurchschnittlich"
+    grz_shape$ggplot_data[grz_shape$ggplot_data == '#AAAAFA'] <- "Unterdurchschnittlich"
+    
+    fill_colors <- 
+      c( "#FF5A64", "#FFCED1",  "#E6E5FE", "#AAAAFA")
+    
+    names(fill_colors) <- c(
+      "Überdurchschnittlich",
+      "Eher überdurchschnittlich",
+      "Eher unterdurchschnittlich",
+      "Unterdurchschnittlich"
+    )
+    
+    plot <- 
+    grz_shape %>% 
+      st_set_crs(4326) %>%
+      ggplot() +
+      geom_sf(aes(fill=ggplot_data), size=.5, color='black') +
+      geom_sf(data=st_set_crs(bez_shape, 4326), size=.7,fill=NA,color='black') +
+      scale_fill_manual(values=fill_colors) +
+      theme_classic(base_size=14) +
+      theme(axis.text.x=element_blank(),
+            axis.ticks.x=element_blank(),
+            axis.text.y=element_blank(),
+            axis.ticks.y=element_blank(),
+            axis.line = element_blank()) +
+      ggtitle(title) +
+      labs(fill=NULL) 

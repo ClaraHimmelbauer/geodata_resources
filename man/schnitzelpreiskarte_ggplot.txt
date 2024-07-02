@@ -1,0 +1,103 @@
+
+packages <- c("sf", "readxl", "dplyr", "leaflet", "leafem", "htmltools", "htmlwidgets", "xml2", "ggplot2", "tidyr", "png", "sp")
+lapply(packages, library, character.only=TRUE)
+
+
+rm(list=ls())
+
+setwd("X:/3_Projekte-SOLL/2022/Reale_Kaufkraft/Sonstiges/Schnitzelpreiskarte")
+
+ggplot_rasterdf <- function(color_matrix, bottom = 0, top = 1, left = 0, right = 1) {
+  require("dplyr")
+  require("tidyr")
+  
+  if (dim(color_matrix)[3] > 3) hasalpha <- T else hasalpha <- F
+  
+  outMatrix <- matrix("#00000000", nrow = dim(color_matrix)[1], ncol = dim(color_matrix)[2])
+  
+  for (i in 1:dim(color_matrix)[1])
+    for (j in 1:dim(color_matrix)[2]) 
+      outMatrix[i, j] <- rgb(color_matrix[i,j,1], color_matrix[i,j,2], color_matrix[i,j,3], ifelse(hasalpha, color_matrix[i,j,4], 1))
+  
+  colnames(outMatrix) <- seq(1, ncol(outMatrix))
+  rownames(outMatrix) <- seq(1, nrow(outMatrix))
+  as.data.frame(outMatrix) %>% mutate(Y = nrow(outMatrix):1) %>% gather(X, color, -Y) %>% 
+    mutate(X = left + as.integer(as.character(X))*(right-left)/ncol(outMatrix), Y = bottom + Y*(top-bottom)/nrow(outMatrix))
+}
+
+
+
+preis <- data.frame("BL" = 1:9, "preis" = c(10.45, 12.9, 11.4, 12.5, 14.3, 11.5, 14.55, 15.4, 12.5),
+                    "label" = c("10,5 €", "12,9 €", "11,4 €", "12,5 €", "14,3 €", "11,5 €", "14,6 €", "15,4 €", "12,5 €"))
+# Österreich-Median: 12.5
+# 5 Kategorien: BL - NÖ, STMK, - K, OÖ, W - T, SBG - VBG
+BL <- read_sf("X:/Geodaten/aaa_Österreich/Verwaltungsgrenzen_vereinfacht", "BL")
+BL <- left_join(BL, preis, by = c("BL" = "BL"))
+
+schnitzel_1 <- readPNG("schnitzel_1.png")
+schnitzel_2 <- readPNG("schnitzel_2.png")
+schnitzel_3 <- readPNG("schnitzel_3.png")
+schnitzel_4 <- readPNG("schnitzel_4.png")
+schnitzel_5 <- readPNG("schnitzel_5.png")
+
+BL_1 <- BL[BL$BL %in% c(1), ]
+BL_2 <- BL[BL$BL %in% c(3, 6), ]
+BL_3 <- BL[BL$BL %in% c(2, 4, 9), ]
+BL_4 <- BL[BL$BL %in% c(5, 7), ]
+BL_5 <- BL[BL$BL %in% c(8), ]
+
+pic_schnitzel_1 <- ggplot_rasterdf(schnitzel_1, left = st_bbox(BL_1)[1], right = st_bbox(BL_1)[3], bottom = st_bbox(BL_1)[2], top = st_bbox(BL_1)[4])
+pic_schnitzel_2 <- ggplot_rasterdf(schnitzel_2, left = st_bbox(BL_2)[1], right = st_bbox(BL_2)[3], bottom = st_bbox(BL_2)[2], top = st_bbox(BL_2)[4])
+pic_schnitzel_3 <- ggplot_rasterdf(schnitzel_3, left = st_bbox(BL_3)[1], right = st_bbox(BL_3)[3], bottom = st_bbox(BL_3)[2], top = st_bbox(BL_3)[4])
+pic_schnitzel_4 <- ggplot_rasterdf(schnitzel_4, left = st_bbox(BL_4)[1], right = st_bbox(BL_4)[3], bottom = st_bbox(BL_4)[2], top = st_bbox(BL_4)[4])
+pic_schnitzel_5 <- ggplot_rasterdf(schnitzel_5, left = st_bbox(BL_5)[1], right = st_bbox(BL_5)[3], bottom = st_bbox(BL_5)[2], top = st_bbox(BL_5)[4])
+
+pic_schnitzel_1$X2 <- pic_schnitzel_1$X
+pic_schnitzel_2$X2 <- pic_schnitzel_2$X
+pic_schnitzel_3$X2 <- pic_schnitzel_3$X
+pic_schnitzel_4$X2 <- pic_schnitzel_4$X
+pic_schnitzel_5$X2 <- pic_schnitzel_5$X
+
+pic_schnitzel_1$Y2 <- pic_schnitzel_1$Y
+pic_schnitzel_2$Y2 <- pic_schnitzel_2$Y
+pic_schnitzel_3$Y2 <- pic_schnitzel_3$Y
+pic_schnitzel_4$Y2 <- pic_schnitzel_4$Y
+pic_schnitzel_5$Y2 <- pic_schnitzel_5$Y
+
+pic_schnitzel_1 <- pic_schnitzel_1 %>% st_as_sf(coords = c("X", "Y"), crs = st_crs(BL_1))
+pic_schnitzel_2 <- pic_schnitzel_2 %>% st_as_sf(coords = c("X", "Y"), crs = st_crs(BL_2))
+pic_schnitzel_3 <- pic_schnitzel_3 %>% st_as_sf(coords = c("X", "Y"), crs = st_crs(BL_3))
+pic_schnitzel_4 <- pic_schnitzel_4 %>% st_as_sf(coords = c("X", "Y"), crs = st_crs(BL_4))
+pic_schnitzel_5 <- pic_schnitzel_5 %>% st_as_sf(coords = c("X", "Y"), crs = st_crs(BL_5))
+
+df_schnitzel_1 <- st_filter(pic_schnitzel_1, BL_1)
+df_schnitzel_2 <- st_filter(pic_schnitzel_2, BL_2)
+df_schnitzel_3 <- st_filter(pic_schnitzel_3, BL_3)
+df_schnitzel_4 <- st_filter(pic_schnitzel_4, BL_4)
+df_schnitzel_5 <- st_filter(pic_schnitzel_5, BL_5)
+
+p <- ggplot() + 
+  geom_sf(data = BL)
+p <- p +
+  geom_tile(data = df_schnitzel_1, aes(x = X2, y = Y2), fill = df_schnitzel_1$color) +
+  geom_tile(data = df_schnitzel_2, aes(x = X2, y = Y2), fill = df_schnitzel_2$color) +
+  geom_tile(data = df_schnitzel_3, aes(x = X2, y = Y2), fill = df_schnitzel_3$color) +
+  geom_tile(data = df_schnitzel_4, aes(x = X2, y = Y2), fill = df_schnitzel_4$color) +
+  geom_tile(data = df_schnitzel_5, aes(x = X2, y = Y2), fill = df_schnitzel_5$color) +
+  theme_void() +
+  geom_sf(data = BL, fill = NA, color = "white") +
+  geom_sf_text(data = BL, aes(label = label), colour = "white")
+p
+
+p <- ggplot() + 
+  geom_sf(data = BL)
+p <- p +
+  geom_tile(data = df_schnitzel_1, aes(x = X2, y = Y2), fill = df_schnitzel_1$color) +
+  geom_tile(data = df_schnitzel_2, aes(x = X2, y = Y2), fill = df_schnitzel_2$color) +
+  geom_tile(data = df_schnitzel_3, aes(x = X2, y = Y2), fill = df_schnitzel_3$color) +
+  geom_tile(data = df_schnitzel_4, aes(x = X2, y = Y2), fill = df_schnitzel_4$color) +
+  geom_tile(data = df_schnitzel_5, aes(x = X2, y = Y2), fill = df_schnitzel_5$color) +
+  theme_void() +
+  geom_sf(data = BL, fill = NA, color = "white") 
+p
+

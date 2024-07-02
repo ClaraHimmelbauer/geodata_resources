@@ -1,0 +1,99 @@
+#### weiß bis rot ############################################
+
+col0<-"#cccccc"			#grau
+col1<-"#FFFFFF"			#weiß	
+col2<- "#ffff99"		#hellgelb
+col3<- "#ffff4d"		#gelb
+col4 <- "#fab700"		#dunkelgelb
+col5 <- "#fa8c00"		#orange
+col6 <- "#e05312"		#dunkelorange
+col7<- "#c71e1d"		#rot
+
+
+
+
+#### Grün nach rot ###########################################
+
+col0 <- "#2e7d61" # #dunkelgrün#4ebd5d  # #2e7d61
+col1 <- "#43b68d" # # mittelgrün #83cd79
+col2 <- "#ABDDA4" # hellgrün #ABDDA4
+col3 <- "#FEE08B" # gelb #FEE08B
+col4 <- "#FDAE61" # hellorange FDAE61 // orange #F46D43
+col5 <- "#D53E4F" # rot#D53E4F
+col6 <- "#9E0142" # dunkelrot#9E0142
+
+col0 <- "#ABDDA4"
+col1 <- "#FEE08B"
+col2 <- "#FDAE61"
+col3 <- "#F46D43"
+col4 <- "#D53E4F"
+col5 <- "#9E0142"
+
+
+
+#### Blau zu Rot mit Spectral ################################
+
+cols <- c(RColorBrewer::brewer.pal(9, "Spectral")[1:9])
+
+das geht auch mit anderen Paletten und mit einer anderen Anzahl von diskreten values dann (hier sinds halt 9)
+
+
+
+
+
+
+
+#### Orange - Rot - Lila #####################################
+
+Macht sich auch gut mit weißen Linien (statt schwarzen)
+
+col1a <- "#FA8C00"
+col1b <- "#E3420C"
+col1c <- "#C71E1D"
+col1d <- "#97193C"
+col1e <- "#5F0E4F"
+
+mit sechs abstufungen:
+col1 <- "#fab700"
+col2 <- "#fa8c00"
+col3 <- "#e05312"
+col4 <- "#c71e1d"
+col5 <- "#ad1a55"
+col6 <- "#5f0e4f"
+
+mit gelb zusätzlich:
+col1 <- "#fcc24b"
+col2 <- "#FA8C00"
+col3 <- "#E3420C"
+col4 <- "#C71E1D"
+col5 <- "#97193C"
+col6 <- "#5F0E4F"
+
+für 7 Abstufungen:
+col1 <- "#fce372"
+col2 <- "#fab700"
+col3 <- "#fa8c00"
+col4 <- "#e05312"
+col5 <- "#c71e1d"
+col6 <- "#ad1a55"
+col7 <- "#5f0e4f"
+
+
+#### Dunkelblau bis Hellblau & hellrot bis Dunkelrot ########
+
+col1 <- "#37375e"
+col2 <- "#4679a3"
+col3 <- "#aacfdd"
+col4 <- "#fe875d"
+col5 <- "#d64238"
+col6 <- "#a10b0b"
+
+#### gelb und schnitzelbraun ################################
+
+col1 <- "#ffc40c"
+col2 <- "#eeaa0d"
+col3 <- "#de900f"
+col4 <- "#cd7710"
+col5 <- "#bd5d12"
+col6 <- "#ac4313"
+col7 <- "#702b0b"
