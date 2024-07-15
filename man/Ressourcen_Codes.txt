@@ -480,3 +480,22 @@ addPolygons(data=grz_shape_right$geometry, color = 'black', weight = 0, fill=T, 
             axis.line = element_blank()) +
       ggtitle(title) +
       labs(fill=NULL) 
+
+
+### Choropleth maps mit choro package (von Ines) ###############################################
+
+mypal <- carto.pal(pal1 = "blue.pal", n1 = 5,  pal2 = "sand.pal", n2 = 5,
+                    transparency = TRUE)
+
+# Popgr
+choroLayer(x = dataall_shp,
+           var = "popgr_av",
+           col = mypal,
+           legend.pos = "left",
+           method = "quantile",
+           nclass = 10,
+           legend.title.txt = "",
+           legend.values.rnd = 2,
+           border ="darkgrey",
+           legend.values.cex = 1)
+plot(shp_nuts0, col = NA, border = "black", lwd = 1, add = TRUE)
